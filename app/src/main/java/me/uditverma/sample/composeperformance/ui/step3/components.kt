@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -60,21 +61,12 @@ fun ComposePerformanceScreen() {
 
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
-    val scrollProgress = remember(scrollState.value, scrollState.maxValue) {
-        Logger.d(
-            message = "Recalculating scroll progress",
-            filter = LogFilter.ReAllocation
-        )
-        scrollState.value / (scrollState.maxValue * 1f)
-    }
-    val showScrollToTopButton by remember {
+    val showScrollToTopButton by remember(scrollState.value) {
         Logger.d(
             message = "Recalculating showScrollToTopButton",
             filter = LogFilter.ReAllocation
         )
-        derivedStateOf {
-            scrollProgress > .5
-        }
+        mutableStateOf( scrollState.value / (scrollState.maxValue * 1f) > .5)
     }
     Column(
         modifier = Modifier
@@ -88,7 +80,7 @@ fun ComposePerformanceScreen() {
             modifier = Modifier.weight(1f)
         )
         Spacer(modifier = Modifier.height(16.dp))
-        ScrollPositionIndicator(progress = scrollProgress)
+        ScrollPositionIndicator(progress = { scrollState.value / (scrollState.maxValue * 1f) })
         Box(
             modifier = Modifier
                 .height(64.dp)
@@ -141,7 +133,7 @@ private fun ItemList(
 @Composable
 private fun ScrollPositionIndicator(
     modifier: Modifier = Modifier,
-    progress: Float
+    progress: () -> Float
 ) {
     BoxWithConstraints(
         modifier = modifier
@@ -165,7 +157,7 @@ private fun ScrollPositionIndicator(
             filter = LogFilter.ReAllocation
         )
         val xOffset = with(LocalDensity.current) {
-            ((progressWidth - 16.dp).toPx() * progress).toDp() + 4.dp
+            ((progressWidth - 16.dp).toPx() * progress()).toDp() + 4.dp
         }
         Box(
             modifier = Modifier

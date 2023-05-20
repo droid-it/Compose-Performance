@@ -19,11 +19,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,50 +60,45 @@ fun ComposePerformanceScreen() {
     }
 
     val scrollState = rememberScrollState()
-    val scrollProgress = remember {
-        mutableStateOf(0f)
-    }
     val scope = rememberCoroutineScope()
-    scrollProgress.value = remember(scrollState.value) {
+    val scrollProgress = remember(scrollState.value, scrollState.maxValue) {
         Logger.d(
             message = "Recalculating scroll progress",
             filter = LogFilter.ReAllocation
         )
         scrollState.value / (scrollState.maxValue * 1f)
     }
-    val showScrollToTopButton by remember {
-        derivedStateOf {
-            Logger.d(
-                message = "Recalculating showScrollToTopButton",
-                filter = LogFilter.ReAllocation
-            )
-            scrollProgress.value > .5
-        }
+    val showScrollToTopButton by remember(scrollProgress) {
+        Logger.d(
+            message = "Recalculating showScrollToTopButton",
+            filter = LogFilter.ReAllocation
+        )
+        mutableStateOf(scrollProgress > .5)
     }
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
         ItemList(
-            items = items,
+            itemHolder = ItemHolder(
+                items
+            ),
             scrollState = scrollState,
             modifier = Modifier.weight(1f)
         )
         Spacer(modifier = Modifier.height(16.dp))
-        ScrollPositionIndicator(progress = scrollProgress.value)
+        ScrollPositionIndicator(progress = scrollProgress)
         Box(
             modifier = Modifier
                 .height(64.dp)
                 .align(Alignment.CenterHorizontally)
         ) {
             if (showScrollToTopButton) {
-                ScrollToTopButton(
-                    onClick = {
-                        scope.launch {
-                            scrollState.scrollTo(0)
-                        }
+                ScrollToTopButton {
+                    scope.launch {
+                        scrollState.scrollTo(0)
                     }
-                )
+                }
             }
         }
     }
@@ -112,7 +107,7 @@ fun ComposePerformanceScreen() {
 @Composable
 private fun ItemList(
     modifier: Modifier = Modifier,
-    items: List<Item>,
+    itemHolder: ItemHolder,
     scrollState: ScrollState = rememberScrollState()
 ) {
     Logger.d(
@@ -123,7 +118,7 @@ private fun ItemList(
         modifier = modifier
             .verticalScroll(scrollState),
     ) {
-        for (item in items) {
+        for (item in itemHolder.items) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -193,10 +188,6 @@ private fun ScrollToTopButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Logger.d(
-        message = "Recomposing ScrollToTopButton",
-        filter = LogFilter.Recomposition
-    )
     Button(
         onClick = onClick,
         modifier = modifier
@@ -204,3 +195,8 @@ private fun ScrollToTopButton(
         Text(text = "Scroll To Top")
     }
 }
+
+@Immutable
+private data class ItemHolder(
+    val items: List<Item>
+)

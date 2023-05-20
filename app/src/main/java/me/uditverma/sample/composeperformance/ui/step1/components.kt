@@ -19,6 +19,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -64,12 +66,12 @@ fun ComposePerformanceScreen() {
         )
         scrollState.value / (scrollState.maxValue * 1f)
     }
-    val showScrollToTopButton = remember(scrollProgress) {
+    val showScrollToTopButton by remember(scrollProgress) {
         Logger.d(
             message = "Recalculating showScrollToTopButton",
             filter = LogFilter.ReAllocation
         )
-        scrollProgress > .5
+        mutableStateOf(scrollProgress > .5)
     }
     Column(
         modifier = Modifier

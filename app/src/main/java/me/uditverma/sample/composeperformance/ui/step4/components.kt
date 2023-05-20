@@ -22,12 +22,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
@@ -60,14 +61,12 @@ fun ComposePerformanceScreen() {
 
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
-    val showScrollToTopButton by remember {
+    val showScrollToTopButton by remember(scrollState.value) {
         Logger.d(
             message = "Recalculating showScrollToTopButton",
             filter = LogFilter.ReAllocation
         )
-        derivedStateOf {
-            scrollState.value / (scrollState.maxValue * 1f) > .5
-        }
+        mutableStateOf( scrollState.value / (scrollState.maxValue * 1f) > .5)
     }
     Column(
         modifier = Modifier
@@ -153,13 +152,6 @@ private fun ScrollPositionIndicator(
             )
             maxWidth - (8.dp)
         }
-        Logger.d(
-            message = "Recalculating item offset",
-            filter = LogFilter.ReAllocation
-        )
-        val xOffset = with(LocalDensity.current) {
-            ((progressWidth - 16.dp).toPx() * progress()).toDp() + 4.dp
-        }
         Box(
             modifier = Modifier
                 .height(1.dp)
@@ -169,7 +161,13 @@ private fun ScrollPositionIndicator(
         )
         Box(
             modifier = Modifier
-                .offset(xOffset, 0.dp)
+                .offset {
+                    IntOffset(
+                        (((progressWidth - 16.dp) * progress()) + 4.dp)
+                            .toPx()
+                            .toInt(), 0
+                    )
+                }
                 .size(16.dp)
                 .align(Alignment.CenterStart)
                 .background(Color.Red)
