@@ -15,7 +15,6 @@ object Logger {
 }
 
 enum class LogFilter {
-    ColumnLoad,
     ReAllocation,
     Recomposition
 }

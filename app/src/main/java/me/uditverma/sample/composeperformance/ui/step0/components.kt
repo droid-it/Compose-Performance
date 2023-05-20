@@ -91,7 +91,7 @@ fun ComposePerformanceScreen() {
 }
 
 @Composable
-fun ItemList(
+private fun ItemList(
     modifier: Modifier = Modifier,
     items: List<Item>,
     scrollState: ScrollState = rememberScrollState()
@@ -119,12 +119,6 @@ fun ItemList(
                     model = item.imageUrl,
                     contentDescription = null,
                     modifier = Modifier.size(72.dp),
-                    onLoading = {
-                        Logger.d(
-                            filter = LogFilter.ColumnLoad,
-                            message = "image ${item.id} is loading"
-                        )
-                    }
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(text = item.desc)
@@ -134,7 +128,7 @@ fun ItemList(
 }
 
 @Composable
-fun ScrollPositionIndicator(
+private fun ScrollPositionIndicator(
     modifier: Modifier = Modifier,
     progress: Float
 ) {
@@ -178,7 +172,7 @@ fun ScrollPositionIndicator(
 }
 
 @Composable
-fun ScrollToTopButton(
+private fun ScrollToTopButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
