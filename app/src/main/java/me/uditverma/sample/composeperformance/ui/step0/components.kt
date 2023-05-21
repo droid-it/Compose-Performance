@@ -176,6 +176,10 @@ private fun ScrollToTopButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
+    Logger.d(
+        message = "Recomposing ScrollToTopButton",
+        filter = LogFilter.Recomposition
+    )
     Button(
         onClick = onClick,
         modifier = modifier

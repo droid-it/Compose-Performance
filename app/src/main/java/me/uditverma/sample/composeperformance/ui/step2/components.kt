@@ -20,7 +20,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -188,6 +187,10 @@ private fun ScrollToTopButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
+    Logger.d(
+        message = "Recomposing ScrollToTopButton",
+        filter = LogFilter.Recomposition
+    )
     Button(
         onClick = onClick,
         modifier = modifier
