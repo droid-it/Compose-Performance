@@ -92,11 +92,9 @@ fun ComposePerformanceScreen() {
                 .height(64.dp)
                 .align(Alignment.CenterHorizontally)
         ) {
-            if (showScrollToTopButton) {
-                ScrollToTopButton {
-                    scope.launch {
-                        scrollState.scrollTo(0)
-                    }
+            ScrollToTopButton(showScrollToTopButton) {
+                scope.launch {
+                    scrollState.scrollTo(0)
                 }
             }
         }
@@ -184,9 +182,11 @@ private fun ScrollPositionIndicator(
 
 @Composable
 private fun ScrollToTopButton(
+    isVisible: Boolean,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
+    if (!isVisible) return
     Logger.d(
         message = "Recomposing ScrollToTopButton",
         filter = LogFilter.Recomposition

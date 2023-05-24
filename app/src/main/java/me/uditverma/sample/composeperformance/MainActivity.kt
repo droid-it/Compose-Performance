@@ -3,7 +3,7 @@ package me.uditverma.sample.composeperformance
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import me.uditverma.sample.composeperformance.ui.step5.ComposePerformanceScreen
+import me.uditverma.sample.composeperformance.ui.step5.wip.ComposePerformanceScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
