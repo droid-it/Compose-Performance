@@ -78,17 +78,20 @@ fun ComposePerformanceScreen() {
                 .height(64.dp)
                 .align(Alignment.CenterHorizontally)
         ) {
-            ScrollToTopButton(isVisible = {
-                Logger.d(
-                    message = "Recalculating showScrollToTopButton",
-                    filter = LogFilter.ReAllocation
-                )
-                scrollState.value / (scrollState.maxValue * 1f) > .5
-            }) {
-                scope.launch {
-                    scrollState.scrollTo(0)
+            ScrollToTopButton(
+                isVisible = {
+                    Logger.d(
+                        message = "Recalculating showScrollToTopButton",
+                        filter = LogFilter.ReAllocation
+                    )
+                    scrollState.value / (scrollState.maxValue * 1f) > .5
+                },
+                onClick = {
+                    scope.launch {
+                        scrollState.scrollTo(0)
+                    }
                 }
-            }
+            )
         }
     }
 }

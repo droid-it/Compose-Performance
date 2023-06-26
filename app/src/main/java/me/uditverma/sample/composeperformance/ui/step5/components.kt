@@ -61,11 +61,11 @@ fun ComposePerformanceScreen() {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
     val showScrollToTopButton by remember {
-        Logger.d(
-            message = "Recalculating showScrollToTopButton",
-            filter = LogFilter.ReAllocation
-        )
         derivedStateOf {
+            Logger.d(
+                message = "Recalculating showScrollToTopButton",
+                filter = LogFilter.ReAllocation
+            )
             scrollState.value / (scrollState.maxValue * 1f) > .5
         }
     }
@@ -87,7 +87,7 @@ fun ComposePerformanceScreen() {
                 .height(64.dp)
                 .align(Alignment.CenterHorizontally)
         ) {
-            ScrollToTopButton({showScrollToTopButton}) {
+            ScrollToTopButton(isVisible = { showScrollToTopButton }) {
                 scope.launch {
                     scrollState.scrollTo(0)
                 }
